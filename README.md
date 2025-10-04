@@ -38,18 +38,18 @@ Our methodology uses supervised learning methods because both the discriminator 
 We evaluate our system using 3 metrics, Peak Signal-to-Noise Ratio (PSNR), which measures the visual similarity between the cover and steganographic images; Bit Recovery Accuracy to measure robustness under compression; and Exact Match Rate to quantify the percentage of payloads decoded perfectly without error. Our goal is to maintain a high PSNR to ensure high perceptual quality, a high bit rate accurate (>90%), and maximize Exact Match Rate across the dataset. In addition, we perform an ablation study by varying the length of embedded message length, using 0 as a control group, to analyze the trade off between payload size and robustness of image generation. We expect, essentially, to generate visually unaltered images with a highly accurate recovery of the embedded steganographic message.
 
 ### Contributions
-Jameel Maayah: Abstract, Methods
-Caleb Rieck: Problem/Motivation, Results/Discussion
-Srikar Satluri: Literature Review, References
-Ajinkya Argonda: Slides, Video
-Anish Vallabhaneni: Slides
+Jameel Maayah: Abstract, Methods  
+Caleb Rieck: Problem/Motivation, Results/Discussion  
+Srikar Satluri: Literature Review, References  
+Ajinkya Argonda: Slides, Video  
+Anish Vallabhaneni: Slides  
 
 ## 5. References
 
-[1] I. J. Goodfellow et al., “Generative Adversarial Networks,” arXiv.org, Jun. 10, 2014. https://arxiv.org/abs/1406.2661
-‌[2] M. Mirza and S. Osindero, “Conditional Generative Adversarial Nets,” arXiv.org, 2014. https://arxiv.org/abs/1411.1784
-‌[3] K. A. Zhang, A. Cuesta-Infante, L. Xu, and K. Veeramachaneni, “SteganoGAN: High Capacity Image Steganography with GANs,” arXiv:1901.03892 [cs, stat], Jan. 2019, Available: https://arxiv.org/abs/1901.03892
-[4] C. E. Shannon and W. Weaver, “A Mathematical Theory of Communication,” Bell System Technical Journal, vol. 27, no. 4, pp. 623–656, Oct. 1949, doi: https://doi.org/10.1002/j.1538-7305.1948.tb00917.x.
+[1] I. J. Goodfellow et al., “Generative Adversarial Networks,” arXiv.org, Jun. 10, 2014. https://arxiv.org/abs/1406.2661  
+‌[2] M. Mirza and S. Osindero, “Conditional Generative Adversarial Nets,” arXiv.org, 2014. https://arxiv.org/abs/1411.1784  
+‌[3] K. A. Zhang, A. Cuesta-Infante, L. Xu, and K. Veeramachaneni, “SteganoGAN: High Capacity Image Steganography with GANs,” arXiv:1901.03892 [cs, stat], Jan. 2019, Available: https://arxiv.org/abs/1901.03892  
+[4] C. E. Shannon and W. Weaver, “A Mathematical Theory of Communication,” Bell System Technical Journal, vol. 27, no. 4, pp. 623–656, Oct. 1949, doi: https://doi.org/10.1002/j.1538-7305.1948.tb00917.x.  
 ‌
 
 
