@@ -10,7 +10,7 @@ We would like to opt in for the Outstanding Project award.
 Generative AI models are capable of reproducing artificial images that replicate existing databases[1]. Incremental developments of these models have allowed for the conditioning of the output of traditional generative networks by representing class labels or other features as additional input to the generator model[2]. We now look at a specific application of the GAN with its usage in hiding arbitrary binary data in images while keeping the changes hard to detect[3]. We will use various methods outlined by Claude Shannon in his “Mathematical Theory of Communication”[4] including rate-distortion theory and mutual information. 
 
 ### Dataset Description
-The MNIST dataset is a small dataset which contains over 70,000 greyscale images of hand-drawn digits 0 through 9. 
+The MNIST dataset is a small dataset which contains over 70,000 labeled greyscale images of hand-drawn digits 0 through 9. 
 ### Dataset Link 
 https://www.kaggle.com/datasets/hojjatk/mnist-dataset
 
