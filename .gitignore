@@ -2,3 +2,6 @@ data/
 invisigan_generated_images/
 venv/
 .ipynb_checkpoints/
+decoder.pth
+generator.pth
+generated_image.png
