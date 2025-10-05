@@ -73,20 +73,20 @@ class Generator(nn.Module):
     def __init__(self, latent_dim, msg_width, img_shape):
         super().__init__()
 
-        self.init_size = img_shape[1] // 4
-        self.l1 = nn.Sequential(nn.Linear(latent_dim + msg_width, 128 * self.init_size ** 2))
+        self.init_size = img_shape[1] // 4 # Since we upscale twice by a scale factor of 2
+        self.l1 = nn.Sequential(nn.Linear(latent_dim + msg_width, 128 * self.init_size ** 2)) # Concatenate latent vector and message vector
         self.conv_blocks = nn.Sequential(
             nn.BatchNorm2d(128),
-            nn.Upsample(scale_factor=2),
+            nn.Upsample(scale_factor=2), # Upscale 2x
             nn.Conv2d(128, 128, 3, 1, 1),
             nn.BatchNorm2d(128, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Upsample(scale_factor=2),
-            nn.Conv2d(128, 64, 3, 1, 1),
+            nn.Upsample(scale_factor=2), # Upscale 2x
+            nn.Conv2d(128, 64, 3, 1, 1), 
             nn.BatchNorm2d(64, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(64, img_shape[0], 3, 1, 1),
-            nn.Tanh()
+            nn.Tanh() # Each pixel is [0, 1]
         )
 
     def forward(self, z, msg):
