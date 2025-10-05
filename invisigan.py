@@ -167,7 +167,7 @@ fixed_msg = torch.randint(0, 2, (100, MESSAGE_WIDTH), device=device, dtype=torch
 # Train loop
 for epoch in range(EPOCHS):
     for i, (imgs, _) in enumerate(dataloader):
-        imgs = imgs.to(device)
+        imgs = imgs.to(device) # Sample real images from dataset
 
         # Uniform labels (these are used later to compute the discriminator accuracy for both fake and real detection)
         valid = torch.ones(imgs.size(0), 1, device=device)
@@ -178,7 +178,7 @@ for epoch in range(EPOCHS):
 
         z = torch.randn(imgs.size(0), LATENT_DIM, device=device) # Sample from latent space
         msgs = torch.randint(0, 2, (imgs.size(0), MESSAGE_WIDTH), device=device, dtype=torch.float) # Random messages for the generator to encode
-        fake_imgs = generator(z, msgs).detach() # Sample real images from dataset
+        fake_imgs = generator(z, msgs).detach() # Sample fake images from generator
 
         real_loss = adversarial_loss(discriminator(imgs), valid) # Loss for detecting real images
         fake_loss = adversarial_loss(discriminator(fake_imgs), fake) # Loss for detecting fake images
@@ -207,7 +207,8 @@ for epoch in range(EPOCHS):
         gen_optim.step()
 
         # Backpropogate decoder loss
-        dec_opt.step()
+        dec_opt.step() # (We don't call .backward() first because gen_loss includes the decoder loss too, gen_loss.backward() updates both)
+                        # (But each optimizer needs to be stepped separately) 
 
         pred_bits = (decoded > 0.5).float() # Discretize decoder bit predictions
         bitwise_acc = (pred_bits == msgs).float().mean().item() # Compute bitwize accuracy per message, then average them
@@ -216,8 +217,8 @@ for epoch in range(EPOCHS):
         # Print loss/ other metrics
         if (i + 1) % 100 == 0:
             print(f"[Epoch {epoch}/{EPOCHS}] [Batch {i}/{len(dataloader)}] "
-                  f"[D loss: {disc_loss.item():.3f}] [G loss: {gen_loss.item():.3f}] "
-                  f"(Adv: {gen_adv_loss.item():.3f}, Dec: {gen_aux_loss.item():.3f})"
+                  f"[Discriminator loss: {disc_loss.item():.3f}] [Generator loss: {gen_loss.item():.3f}] "
+                  f"(Adversarial loss: {gen_adv_loss.item():.3f}, Decoder loss: {gen_aux_loss.item():.3f})"
                   f"[Bit acc: {bitwise_acc:.3f}] [Full rec: {full_recovery:.3f}]")
 
     # Save grid of generated images each epoch
