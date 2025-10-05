@@ -3,6 +3,7 @@ import os
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.transforms as transforms
 
@@ -28,13 +29,10 @@ elif DATASET == "CIFAR10" or DATASET == "CIFAR100":
     IMAGE_SHAPE = (3, 32, 32)
     SINGLE_CHANNEL = False
 
-# Model hyperparameters (later)
-'''
-GENERATOR_NUM_FILTERS
-DISCRIMINATOR_NUM_FILTERS
-DECODER_NUM_FILTERS
-'''
-
+# Model hyperparameters (no longer later)
+GENERATOR_NUM_FILTERS = 256
+DISCRIMINATOR_NUM_FILTERS = 128
+DECODER_NUM_FILTERS = 64
 # Save paths
 ANIMATION_DIR = "invisigan_generated_images"
 CHECKPOINT_DIR = "invisigan_model_checkpoints"
@@ -70,51 +68,52 @@ os.makedirs(ANIMATION_DIR, exist_ok=True)
 
 # Generator: conditioned on latent + message bits
 class Generator(nn.Module):
-    def __init__(self, latent_dim, msg_width, img_shape):
+    def __init__(self, latent_dim, msg_width, img_shape, base_filters=128):
         super().__init__()
 
-        self.init_size = img_shape[1] // 4 # Since we upscale twice by a scale factor of 2
-        self.l1 = nn.Sequential(nn.Linear(latent_dim + msg_width, 128 * self.init_size ** 2)) # Concatenate latent vector and message vector
+        self.init_size = img_shape[1] // 4
+        self.l1 = nn.Sequential(
+            nn.Linear(latent_dim + msg_width, base_filters * self.init_size ** 2)
+        )
         self.conv_blocks = nn.Sequential(
-            nn.BatchNorm2d(128),
-            nn.Upsample(scale_factor=2), # Upscale 2x
-            nn.Conv2d(128, 128, 3, 1, 1),
-            nn.BatchNorm2d(128, 0.8),
+            nn.BatchNorm2d(base_filters),
+            nn.Upsample(scale_factor=2),
+            nn.Conv2d(base_filters, base_filters, 3, 1, 1),
+            nn.BatchNorm2d(base_filters, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Upsample(scale_factor=2), # Upscale 2x
-            nn.Conv2d(128, 64, 3, 1, 1), 
-            nn.BatchNorm2d(64, 0.8),
+            nn.Upsample(scale_factor=2),
+            nn.Conv2d(base_filters, base_filters // 2, 3, 1, 1),
+            nn.BatchNorm2d(base_filters // 2, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(64, img_shape[0], 3, 1, 1),
-            nn.Tanh() # Each pixel is [0, 1]
+            nn.Conv2d(base_filters // 2, img_shape[0], 3, 1, 1),
+            nn.Tanh(),
         )
 
     def forward(self, z, msg):
-        x = torch.cat((z, msg), dim=1) # Concatenate latent dim and binary message
+        x = torch.cat((z, msg), dim=1)
         out = self.l1(x)
-        out = out.view(out.size(0), 128, self.init_size, self.init_size)
+        out = out.view(out.size(0), GENERATOR_NUM_FILTERS, self.init_size, self.init_size)
         return self.conv_blocks(out)
 
 # Discriminator: predicts real/fake
 class Discriminator(nn.Module):
-    def __init__(self, img_shape):
+    def __init__(self, img_shape, base_filters=64):
         super().__init__()
 
-        # Using standard convnet architecture
         self.model = nn.Sequential(
-            nn.Conv2d(img_shape[0], 64, 3, 2, 1),
+            nn.Conv2d(img_shape[0], base_filters, 3, 2, 1),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Dropout(0.25),
-            nn.Conv2d(64, 128, 3, 2, 1),
+            nn.Conv2d(base_filters, base_filters * 2, 3, 2, 1),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Dropout(0.25),
-            nn.Conv2d(128, 256, 3, 2, 1),
+            nn.Conv2d(base_filters * 2, base_filters * 4, 3, 2, 1),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Flatten()
+            nn.Flatten(),
         )
         _ = torch.zeros(1, *img_shape)
         flat_dim = self.model(_).shape[1]
-        self.fc = nn.Linear(flat_dim, 1) # -> Outputs real/fake prediction (no sigmoid, BCELoss expects raw logits)
+        self.fc = nn.Linear(flat_dim, 1)
 
     def forward(self, img):
         return self.fc(self.model(img))
@@ -141,12 +140,12 @@ class Decoder(nn.Module):
         return self.model(img)
 
 # Instantiate networks
-generator =     Generator(LATENT_DIM, MESSAGE_WIDTH, IMAGE_SHAPE).to(device)
-discriminator = Discriminator(IMAGE_SHAPE).to(device)
+generator = Generator(LATENT_DIM, MESSAGE_WIDTH, IMAGE_SHAPE, GENERATOR_NUM_FILTERS).to(device)
+discriminator = Discriminator(IMAGE_SHAPE, DISCRIMINATOR_NUM_FILTERS).to(device)
 decoder =       Decoder(IMAGE_SHAPE, MESSAGE_WIDTH).to(device)
 
 # Instantiate losses
-adversarial_loss =  nn.BCEWithLogitsLoss()
+#adversarial_loss =  nn.BCEWithLogitsLoss()
 decoder_loss =      nn.BCELoss()
 
 # Instantiate optimizers
@@ -174,9 +173,12 @@ for epoch in range(EPOCHS):
         msgs = torch.randint(0, 2, (imgs.size(0), MESSAGE_WIDTH), device=device, dtype=torch.float) # Random messages for the generator to encode
         fake_imgs = generator(z, msgs).detach() # Sample real images from dataset
 
-        real_loss = adversarial_loss(discriminator(imgs), valid) # Loss for detecting real images
-        fake_loss = adversarial_loss(discriminator(fake_imgs), fake) # Loss for detecting fake images
-        disc_loss = 0.5 * (real_loss + fake_loss) # Average them for now
+        real_pred = discriminator(imgs)
+        fake_pred = discriminator(fake_imgs)
+
+        real_loss = torch.mean(F.relu(1.0 - real_pred))
+        fake_loss = torch.mean(F.relu(1.0 + fake_pred))
+        disc_loss = real_loss + fake_loss
 
         # Backpropogate discriminator loss
         disc_loss.backward() 
@@ -192,7 +194,7 @@ for epoch in range(EPOCHS):
         validity = discriminator(gen_imgs) # Discriminator predictions of real/fake
         decoded = decoder(gen_imgs) # Decoder prediction of the original messages
 
-        gen_adv_loss = adversarial_loss(validity, valid) # BCE between predicted and expected real/fake distribution (expected is all valid, so np.ones)
+        gen_adv_loss = -torch.mean(discriminator(gen_imgs))
         gen_aux_loss = decoder_loss(decoded, msgs) # BCE between decoded and original message bits
         gen_loss = 0.5 * (gen_adv_loss + gen_aux_loss) # Average them (we can weigh these differently later, balance readability vs. realism)
 
