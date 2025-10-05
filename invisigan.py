@@ -72,6 +72,7 @@ os.makedirs(ANIMATION_DIR, exist_ok=True)
 class Generator(nn.Module):
     def __init__(self, latent_dim, msg_width, img_shape):
         super().__init__()
+
         self.init_size = img_shape[1] // 4
         self.l1 = nn.Sequential(nn.Linear(latent_dim + msg_width, 128 * self.init_size ** 2))
         self.conv_blocks = nn.Sequential(
@@ -98,6 +99,8 @@ class Generator(nn.Module):
 class Discriminator(nn.Module):
     def __init__(self, img_shape):
         super().__init__()
+
+        # Using standard convnet architecture
         self.model = nn.Sequential(
             nn.Conv2d(img_shape[0], 64, 3, 2, 1),
             nn.LeakyReLU(0.2, inplace=True),
@@ -120,6 +123,8 @@ class Discriminator(nn.Module):
 class Decoder(nn.Module):
     def __init__(self, img_shape, msg_width):
         super().__init__()
+
+        # Using standard convnet architecture
         self.model = nn.Sequential(
             nn.Conv2d(img_shape[0], 64, 3, 2, 1),
             nn.LeakyReLU(0.2, inplace=True),
