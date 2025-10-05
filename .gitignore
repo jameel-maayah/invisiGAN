@@ -1,2 +1,4 @@
 data/
 invisigan_generated_images/
+venv/
+.ipynb_checkpoints/
