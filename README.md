@@ -59,6 +59,10 @@ Our methodology uses supervised learning methods because both the discriminator 
 
 ## 4. Results/Discussion
 
+![Diagram](sample_10x10.png)
+
+Sample generated images after 30 epochs, each encoding a 16 bit message.
+
 ### Metrics
 We evaluate our system using 3 metrics: Fréchet Inception Distance (FID) to quantify the deviation of the generator's images from the original dataset; Bit Recovery Accuracy to measure the accuracy of the decoder per bit; and Full Recovery Rate to quantify the percentage of payloads decoded perfectly without error. Our goal is to maintain a low FID to ensure high perceptual quality, a high bit rate accurate (>99%), and maximize Exact Match Rate across all generated images. 
 
@@ -69,7 +73,11 @@ Since the adversarial losses values are not directly interpretable, we do not re
 ### Visualizations/Interpretability
 We use the Grad-CAM method to visualize which image features contribute to which bits of the decoded message:
 
-Grad-CAM computes the gradients of the decoder's output $A(G(z, M))$ with respect to each convolutional feature map. By performing Grad-CAM on all bits of $M$, we can visualize the individual contributions of each bit $M_i$ on the generated image:
+![Diagram](gradcam_single_bit.png)
+
+Grad-CAM computes the gradients of the decoder's output $D(G(z, M))$ with respect to each convolutional feature map, producing a heatmap weighted by each feature channel's gradient magnitude. By performing Grad-CAM on all bits of $M$, we can visualize the individual contributions of each bit $M_i$ on the generated image:
+
+![Diagram](gradcam_full_message.png)
 
 Compared to typical steganographic algorithms which exploit pixel-wise differences and noise patterns, our generator seems to decode the message $M$ in higher level semantic features, such as stroke direction, width, and even the class of digit. This indicates that the generator exploits deeper, more complex features of the dataset in a way that makes the encoding more difficult to tamper with or even detect without altering the image significantly.
 
