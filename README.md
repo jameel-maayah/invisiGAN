@@ -1,7 +1,7 @@
 # invisiGAN
 
 ## Abstract
-We propose a methodology to embed binary sequences into the output of generative AI models, in particular Generative Adversarial Networks (GANs)[1], in ways imperceptible to the eye and resilient to image compression. Our technique conditions the generator network on a bit vector in addition to random noise, and the generator’s primary loss gradient will be supplied by the discriminator network. In addition, we incorporate a third “probe” network that attempts to decode the binary vector encoded by images (both original and compressed) created by the generator. This gives us a secondary training target, namely the accurate recovery of the original binary sequence. The job of the generator is to balance the “readability” of generated images whilst preserving its approximation of the original dataset.
+We propose a methodology to embed binary sequences into the output of generative AI models, in particular Generative Adversarial Networks (GANs)[1], in ways imperceptible to the eye. Our technique conditions the generator network on a bit vector in addition to random noise, and the generator’s primary loss gradient will be supplied by the discriminator network. In addition, we incorporate a third “probe” network that attempts to decode the binary vector encoded by images created by the generator. This gives us a secondary training target, namely the accurate recovery of the original binary sequence. The job of the generator is to balance the “readability” of generated images whilst preserving its approximation of the original dataset.
 
 We would like to opt in for the Outstanding Project award.
 
@@ -17,25 +17,64 @@ https://www.kaggle.com/datasets/hojjatk/mnist-dataset
 ## 2. Problem and Motivation
 
 ### Problem 
-In recent years, the addition of watermarking into generative models has been explored in models like SteganoGAN[3], which embed messages into the input image which are undetectable to users but can be decrypted with a trained model, usually a CNN. However, as images are often compressed when they are shared online, these watermarks are lost when the exact pixel values of the image changes. 
+In recent years, the incorporation of steganography into generative models has been explored in models like SteganoGAN[3], which embed messages into the input image undetectable to users but able to be decrypted with a trained model. However, these models cannot be considered to be truly "self-watermarking" models because the addition of the watermark occurs post-hoc. In contrast, our method encodes messages as an integral part of image generation, in a way that the message and image are inseparable.
 ### Motivation
-As AI generated content becomes increasingly indistinguishable from reality, the need for users to be confident in the authenticity of the images they see and share online is increasingly important. However, the popularity of these tools derives, fundamentally, from their ability to approximate reality. As such, any method of embedding a “watermark” into the output of a generative model must not disrupt the user experience. Since images shared online mostly undergo compression, it is critical that we preserve watermarkability through compression.
+As AI generated content becomes increasingly indistinguishable from reality, the need for users to be confident in the authenticity of the images they see and share online is increasingly important. However, the popularity of these tools derives, fundamentally, from their ability to approximate reality. As such, any method of embedding a “watermark” into the output of a generative model must not disrupt the user experience. 
 
 ## 3. Methodology
 
-We adopt a traditional cGAN training framework[2] that conditions the generator input on a random binary sequence instead of class labels. The generator network is trained with two objectives: an adversarial objective supplied by the discriminator, which attempts to distinguish images that were generated versus sampled from the dataset; and an auxiliary objective supplied by the decoder, which attempts to decode the binary message encoded in the generated image. The discriminator loss is calculated via binary cross-entropy between the two classes of data (fake and real), whereas the decoder loss is calculated via binary cross-entropy between each logit of the predicted and original binary sequences. To provide a gradient to the generator for optimization, we simply weigh these losses equally. 
+We adopt a traditional cGAN training framework[2] that conditions the generator network on a random binary sequence $M$ instead of class labels:
+
+$G(z, M)$ - Generator network
+
+The generator network is trained with two objectives: an adversarial objective supplied by the discriminator, which attempts to distinguish images that were generated versus sampled from the dataset; and an auxiliary objective supplied by the decoder, which attempts to decode the binary message encoded in the generated image:
+
+$A(x)$ - Discriminator (adversarial) network
+
+$D(x)$ - Decoder network
+
+The discriminator loss is calculated via hinge loss between the two classes of data (fake and real), whereas the decoder loss is calculated via binary cross-entropy between each logit of the predicted and original binary sequences. To provide a gradient to the generator for optimization, we perform a weighted average of these losses: 
+
+$L_G = c_{adv}L_A + c_{aux}L_D$
 
 ### Data Preprocessing Techniques
-We will partition the dataset into training, validation, and test sets to prevent overfitting of the generator and discriminator. Before inputting grayscale images to the discriminator and decoder, we normalize them to pixel values between 0 and 1 for stabler gradients. In order to encourage compression resistance, we will pass generated images through JPEG transformations during training, requiring the decoder to recover the encrypted bits even after compression artifacts are added.
+Before inputting images to the discriminator and decoder, we normalize them to pixel values between 0 and 1 for stabler gradients. All images in the data pipeline are grayscale (single-channel) and 28 by 28 pixels.
 
 ### ML Models/Algorithms
-We will use convolutional neural networks for the discriminator and decoder, and stacked transposed convolutional layers for the generator. All of these will be created and optimized via gradient descent using built-in pytorch functions and classes (torch.nn.Linear, torch.nn.Conv2d, torch.optim.Adam, etc.), with error signals also computed using torch.nn.BCELoss.
+We use convolutional neural networks for the discriminator and decoder, and stacked upscale layers for the generator. All of these are created and optimized via gradient descent using built-in pytorch functions and classes (torch.nn.Linear, torch.nn.Conv2d, torch.optim.Adam, etc.), with error signals also computed using torch.nn.BCELoss.
+
+### Architecture
+The generator network consists of stacked upsampling layers that transform the latent vector into a 2d image. Naively, the message vector could simply be concatenated with the latent vector $z$ in order to condition the network $G$ on both $z$ and $M$:
+
+$G(z, M) = G([z,M])$
+
+However, this is a critical error that severely impairs model performance. GANs learn a continuous manifold between high dimensional points (images) in the original dataset, relying on the ability to interpolate between nearby images; if certain dimensions of $z$ are forced to represent the discrete bits of $M$, the smoothness of the latent space is broken and discontinuities are introduced. 
+
+To avoid this, we project $M$ into the latent space using a linear transformation. This continuous embedding is then added to $z$ before the first upscale. We repeat these residual "injections" of $M$ after each block so that the generator never loses the information content of $M$.
+
+The discriminator and decoder networks share similar architecture, using stacked convolutional layers to compress the input image into a lower-dimensional feature space. The discriminator has a single output neuron representing the probability of the input image being real or fake. The decoder has $n$ output neurons, with the $i^{th}$ neuron representing the probability that $M_i$ is 0 or 1.
 
 ### Supervised Learning Method
 Our methodology uses supervised learning methods because both the discriminator and the decoder are trained with labeled data (real vs. fake images, and binary sequences, respectively). The generator is simultaneously trained using signals from these explicit, supervised objectives.
 
 ## 4. Results/Discussion
-We evaluate our system using 3 metrics, Peak Signal-to-Noise Ratio (PSNR), which measures the visual similarity between the cover and steganographic images; Bit Recovery Accuracy to measure robustness under compression; and Exact Match Rate to quantify the percentage of payloads decoded perfectly without error. Our goal is to maintain a high PSNR to ensure high perceptual quality, a high bit rate accurate (>90%), and maximize Exact Match Rate across the dataset. In addition, we perform an ablation study by varying the length of embedded message length, using 0 as a control group, to analyze the trade off between payload size and robustness of image generation. We expect, essentially, to generate visually unaltered images with a highly accurate recovery of the embedded steganographic message.
+
+### Metrics
+We evaluate our system using 3 metrics: Fréchet Inception Distance (FID) to quantify the deviation of the generator's images from the original dataset; Bit Recovery Accuracy to measure the accuracy of the decoder per bit; and Full Recovery Rate to quantify the percentage of payloads decoded perfectly without error. Our goal is to maintain a low FID to ensure high perceptual quality, a high bit rate accurate (>99%), and maximize Exact Match Rate across all generated images. 
+
+For our first trained model, the generator network achieves an FID of 14.306, indicating satisfying realism and adherence to the MNIST dataset. The generator-decoder pipeline achieves a 98.6% bitwise accuracy, and a full recovery rate of 80.4% on 16-bit messages.
+
+Since the adversarial losses values are not directly interpretable, we do not report them numerically. It is more useful to rely on metrics such as FID, which directly quantify generator realism.
+
+### Visualizations/Interpretability
+We use the Grad-CAM method to visualize which image features contribute to which bits of the decoded message:
+
+Grad-CAM computes the gradients of the decoder's output $A(G(z, M))$ with respect to each convolutional feature map. By performing Grad-CAM on all bits of $M$, we can visualize the individual contributions of each bit $M_i$ on the generated image:
+
+Compared to typical steganographic algorithms which exploit pixel-wise differences and noise patterns, our generator seems to decode the message $M$ in higher level semantic features, such as stroke direction, width, and even the class of digit. This indicates that the generator exploits deeper, more complex features of the dataset in a way that makes the encoding more difficult to tamper with or even detect without altering the image significantly.
+
+### Next Steps
+Having produced our first functional model, we will explore different architectures and hyperparameters in order to maximize decoder accuracy while maintaining a sufficiently low FID score; specifically, we plan to modify our generator architecture to more closely resemble a DCGAN, using transposed convolutional layers rather than upsampling layers. In addition, for all future model runs we plan to perform an ablation study by varying the length of embedded message length, using 0 as a control group, to analyze the trade off between payload size and robustness of image generation. We expect, essentially, to generate visually unaltered images with a highly accurate recovery of the embedded steganographic message. Finally, we plan to explore the effect of dataset choice by additionally using CIFAR-10, a dataset of similarly shaped but more diverse images. We hypothesize that the entropy of the image dataset has a direct impact on the amount of mutual information $I(G(z, M), M)$ that can be encoded in the image.
 
 ## 5. References
 
