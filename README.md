@@ -17,7 +17,7 @@ https://www.kaggle.com/datasets/hojjatk/mnist-dataset
 ## 2. Problem and Motivation
 
 ### Problem 
-In recent years, the incorporation of steganography into generative models has been explored in models like SteganoGAN[3], which embed messages into the input image undetectable to users but able to be decrypted with a trained model. However, these models cannot be considered to be truly "self-watermarking" models because the addition of the watermark occurs post-hoc. In contrast, our method encodes messages as an integral part of image generation, in a way that the message and image are inseparable.
+In recent years, the incorporation of steganography into generative models has been explored in models like SteganoGAN[3], which embed messages into the input image undetectable to users but able to be decrypted with a trained model. However, these models cannot be considered to be truly "self-watermarking" models because the addition of the watermark occurs *post-hoc*. In contrast, our method encodes messages as an integral part of image generation, in a way that the message and image are inseparable.
 ### Motivation
 As AI generated content becomes increasingly indistinguishable from reality, the need for users to be confident in the authenticity of the images they see and share online is increasingly important. However, the popularity of these tools derives, fundamentally, from their ability to approximate reality. As such, any method of embedding a “watermark” into the output of a generative model must not disrupt the user experience. 
 
@@ -61,7 +61,7 @@ Our methodology uses supervised learning methods because both the discriminator 
 
 ![Diagram](sample_10x10.png)
 
-Sample generated images after 30 epochs, each encoding a 16 bit message.
+*Sample generated images after 30 epochs, each encoding a 16 bit message.*
 
 ### Metrics
 We evaluate our system using 3 metrics: Fréchet Inception Distance (FID) to quantify the deviation of the generator's images from the original dataset; Bit Recovery Accuracy to measure the accuracy of the decoder per bit; and Full Recovery Rate to quantify the percentage of payloads decoded perfectly without error. Our goal is to maintain a low FID to ensure high perceptual quality, a high bit rate accurate (>99%), and maximize Exact Match Rate across all generated images. 
@@ -71,13 +71,17 @@ For our first trained model, the generator network achieves an FID of 14.306, in
 Since the adversarial losses values are not directly interpretable, we do not report them numerically. It is more useful to rely on metrics such as FID, which directly quantify generator realism.
 
 ### Visualizations/Interpretability
-We use the Grad-CAM method to visualize which image features contribute to which bits of the decoded message:
+We use the Grad-CAM method to visualize which image features contribute to a single bit of the decoded message:
 
 ![Diagram](gradcam_single_bit.png)
 
-Grad-CAM computes the gradients of the decoder's output $D(G(z, M))$ with respect to each convolutional feature map, producing a heatmap weighted by each feature channel's gradient magnitude. By performing Grad-CAM on all bits of $M$, we can visualize the individual contributions of each bit $M_i$ on the generated image:
+*Grad-CAM heatmap for Bit 0*
 
-![Diagram](gradcam_full_message.png)
+Grad-CAM computes the gradients of the decoder's output $D(G(z, M))$ with respect to each convolutional feature map of the final convolutional layer, producing a heatmap weighted by each feature channel's gradient magnitude. By performing Grad-CAM on all bits of $M$, we can visualize the individual contributions of each bit $M_i$ on the generated image:
+
+<img src="gradcam_full_message.png" width="50%">
+
+*Grad-CAM heatmap for all 16 bits. Notably, Bit 2 seems to correspond to the background hue of the generated image*
 
 Compared to typical steganographic algorithms which exploit pixel-wise differences and noise patterns, our generator seems to decode the message $M$ in higher level semantic features, such as stroke direction, width, and even the class of digit. This indicates that the generator exploits deeper, more complex features of the dataset in a way that makes the encoding more difficult to tamper with or even detect without altering the image significantly.
 
