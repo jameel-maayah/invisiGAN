@@ -100,11 +100,11 @@ Having produced our first functional model, we will explore different architectu
 [4] C. E. Shannon and W. Weaver, “A Mathematical Theory of Communication,” Bell System Technical Journal, vol. 27, no. 4, pp. 623–656, Oct. 1949, doi: https://doi.org/10.1002/j.1538-7305.1948.tb00917.x.  
 
 ### Contributions
-Jameel Maayah: Abstract, Methods  
-Caleb Rieck: Problem/Motivation, Results/Discussion  
-Srikar Satluri: Literature Review, References  
-Ajinkya Argonda: Slides, Video  
-Anish Vallabhaneni: Slides  
+Jameel Maayah: Implemented training script, Grad-CAM visualizations, write-up
+Caleb Rieck: Implemented training script, FID metric
+Srikar Satluri: Research network architectures
+Ajinkya Argonda: Researched network architectures, researched SteganoGAN
+Anish Vallabhaneni: Loss metrics, researched GAN performance metrics 
 
 ### GANTT Chart (Tentative)
 ![Diagram](gantt_progress.jpg)
