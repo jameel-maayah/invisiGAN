@@ -107,7 +107,7 @@ Ajinkya Argonda: Slides, Video
 Anish Vallabhaneni: Slides  
 
 ### GANTT Chart (Tentative)
-![Diagram](gantt.jpg)
+![Diagram](gantt_progress.jpg)
 ‌
 
 
