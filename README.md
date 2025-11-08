@@ -23,6 +23,8 @@ As AI generated content becomes increasingly indistinguishable from reality, the
 
 ## 3. Methodology
 
+*LaTeX does not render on GitHub Pages, so view this section from the GitHub repo itself*
+
 We adopt a traditional cGAN training framework[2] that conditions the generator network on a random binary sequence $M$ instead of class labels:
 
 $G(z, M)$ - Generator network
@@ -84,6 +86,8 @@ Grad-CAM computes the gradients of the decoder's output $D(G(z, M))$ with respec
 *Grad-CAM heatmap for all 16 bits. Notably, Bit 2 seems to correspond to the background hue of the generated image*
 
 Compared to typical steganographic algorithms which exploit pixel-wise differences and noise patterns, our generator seems to decode the message $M$ in higher level semantic features, such as stroke direction, width, and even the class of digit. This indicates that the generator exploits deeper, more complex features of the dataset in a way that makes the encoding more difficult to tamper with or even detect without altering the image significantly.
+
+All the relevant code for training and evaluation can be found in **train.ipynb**.
 
 ### Next Steps
 Having produced our first functional model, we will explore different architectures and hyperparameters in order to maximize decoder accuracy while maintaining a sufficiently low FID score; specifically, we plan to modify our generator architecture to more closely resemble a DCGAN, using transposed convolutional layers rather than upsampling layers. In addition, for all future model runs we plan to perform an ablation study by varying the length of embedded message length, using 0 as a control group, to analyze the trade off between payload size and robustness of image generation. We expect, essentially, to generate visually unaltered images with a highly accurate recovery of the embedded steganographic message. Finally, we plan to explore the effect of dataset choice by additionally using CIFAR-10, a dataset of similarly shaped but more diverse images. We hypothesize that the entropy of the image dataset has a direct impact on the amount of mutual information $I(G(z, M), M)$ that can be encoded in the image.
