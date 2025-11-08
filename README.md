@@ -101,9 +101,13 @@ Having produced our first functional model, we will explore different architectu
 
 ### Contributions
 Jameel Maayah: Implemented training script, Grad-CAM visualizations, write-up
+
 Caleb Rieck: Implemented training script, FID metric
-Srikar Satluri: Research network architectures
-Ajinkya Argonda: Researched network architectures, researched SteganoGAN
+
+Srikar Satluri: Research network architectures 
+
+Ajinkya Argonda: Researched network architectures, researched SteganoGAN 
+
 Anish Vallabhaneni: Loss metrics, researched GAN performance metrics 
 
 ### GANTT Chart (Tentative)
