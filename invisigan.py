@@ -1,3 +1,7 @@
+'''
+THIS FILE IS OLD USE TRAIN.IPYNB
+'''
+
 import numpy as np
 import os
 
