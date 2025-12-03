@@ -53,6 +53,10 @@ $G(z, M) = G([z,M])$
 
 However, this is a critical error that severely impairs model performance. GANs learn a continuous manifold between high dimensional points (images) in the original dataset, relying on the ability to interpolate between nearby images; if certain dimensions of $z$ are forced to represent the discrete bits of $M$, the smoothness of the latent space is broken and discontinuities are introduced. 
 
+![Diagram](interp.gif)
+
+*Latent space interpolation. Pick two random points in the z-space and transition smoothly between them*
+
 To avoid this, we project $M$ into the latent space using a linear transformation. This continuous embedding is then added to $z$ before the first upscale. We repeat these residual "injections" of $M$ after each block so that the generator never loses the information content of $M$.
 
 The discriminator and decoder networks share similar architecture, using stacked convolutional layers to compress the input image into a lower-dimensional feature space. The discriminator has a single output neuron representing the probability of the input image being real or fake. The decoder has $n$ output neurons, with the $i^{th}$ neuron representing the probability that $M_i$ is 0 or 1.
@@ -69,7 +73,7 @@ Our methodology uses supervised learning methods because both the discriminator 
 ### Metrics
 We evaluate our system using 3 metrics: Fréchet Inception Distance (FID) to quantify the deviation of the generator's images from the original dataset; Bit Recovery Accuracy to measure the accuracy of the decoder per bit; and Full Recovery Rate to quantify the percentage of payloads decoded perfectly without error. Our goal is to maintain a low FID to ensure high perceptual quality, a high bit rate accurate (>99%), and maximize Exact Match Rate across all generated images. 
 
-For our first trained model, the generator network achieves an FID of 14.306, indicating satisfying realism and adherence to the MNIST dataset. The generator-decoder pipeline achieves a 98.6% bitwise accuracy, and a full recovery rate of 80.4% on 16-bit messages.
+![Diagram](fid_fullrec_vs_bits.png)
 
 Since the adversarial losses values are not directly interpretable, we do not report them numerically. It is more useful to rely on metrics such as FID, which directly quantify generator realism.
 
@@ -91,7 +95,9 @@ Compared to typical steganographic algorithms which exploit pixel-wise differenc
 All the relevant code for training and evaluation can be found in **train.ipynb**.
 
 ### Next Steps
-Having produced our first functional model architecture, we will explore different architectures and hyperparameters in order to maximize decoder accuracy while maintaining a sufficiently low FID score; specifically, we plan to modify our generator architecture to more closely resemble a DCGAN, using transposed convolutional layers rather than upsampling layers, for increased visual fidelity. Additionally, knowing that our methodology works, we can expand it to more complex and fuller resolution image datasets. Finally, we plan to extend our technique to diffusion models as a proof of generality.
+Having produced our first functional model architecture, we will explore different architectures and hyperparameters in order to maximize decoder accuracy while maintaining a sufficiently low FID score; specifically, we plan to modify our generator architecture to more closely resemble a DCGAN, using transposed convolutional layers rather than upsampling layers, for increased visual fidelity. For more qualitative measures of interpretability, we plan to perform an ablation study on each residual message injection to illustrate which upscaling layers of the generator decode which visual features, by "turning off" certain injections and observing the changes in the generator output. This can be observed more rigorously using Grad-CAM on the decoder network.
+
+Knowing that our methodology works, we can expand it to more complex and fuller resolution image datasets. Finally, we plan to extend our technique to diffusion models as a proof of generality.
 
 ## 5. References
 
