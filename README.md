@@ -100,7 +100,7 @@ $I(G(z, M), M) ≤ H(G(z, M))$
 
 Therefore we can conclude that the mutual information is bounded by some quantity proportional to the complexity of the dataset manifold:
 
-$I(G(z, M), M) ≤ H(G(z, M)) ∝ H(dataset)
+$I(G(z, M), M) ≤ H(G(z, M)) ∝ H(dataset)$
 
 EMNIST, having a larger and more expressive manifold, necessarily provides a strictly higher upper bound on the recoverable message information. We find this assertion consistent with our empirical findings.
 
