@@ -55,7 +55,7 @@ However, this is a critical error that severely impairs model performance. GANs 
 
 ![Diagram](interp.gif)
 
-*Latent space interpolation. Pick two random points in the z-space and transition smoothly between them*
+*Latent space interpolation. Pick two random points in the z-space and transition smoothly between them.*
 
 To avoid this, we project $M$ into the latent space using a linear transformation. This continuous embedding is then added to $z$ before the first upscale. We repeat these residual "injections" of $M$ after each block so that the generator never loses the information content of $M$.
 
@@ -86,6 +86,24 @@ Most significantly, we observe significantly better encoding performance using t
 
 ![Diagram](imgspace.png)
 
+*Diagram of the image space, with generator manifolds for MNIST and EMNIST outlined.*
+
+EMNIST is a superset of MNIST, and therefore has higher variety. Image datasets do not have a defined Shannon entropy, but we can assume the entropy of the generator is proportional to the complexity of the dataset manifold[5]:
+
+$H(G_{MNIST}(z,M)) ∝ H(MNIST)$
+
+$H(G_{EMNIST}(z,M)) ∝ H(EMNIST)$
+
+We have an upper bound for the mutual information about the message $M$ recoverable from the generated image $G(z, M)$:
+
+$I(G(z, M), M) ≤ H(G(z, M))$
+
+Therefore we can conclude that the mutual information is bounded by some quantity proportional to the complexity of the dataset manifold:
+
+$I(G(z, M), M) ≤ H(G(z, M)) ∝ H(dataset)
+
+EMNIST, having a larger and more expressive manifold, necessarily provides a strictly higher upper bound on the recoverable message information. We find this assertion consistent with our empirical findings.
+
 ### Visualizations/Interpretability
 We use the Grad-CAM method to visualize which image features contribute to a single bit of the decoded message:
 
@@ -114,6 +132,7 @@ Knowing that our methodology works, we can expand it to more complex and fuller 
 ‌[2] M. Mirza and S. Osindero, “Conditional Generative Adversarial Nets,” arXiv.org, 2014. https://arxiv.org/abs/1411.1784  
 ‌[3] K. A. Zhang, A. Cuesta-Infante, L. Xu, and K. Veeramachaneni, “SteganoGAN: High Capacity Image Steganography with GANs,” arXiv:1901.03892 [cs, stat], Jan. 2019, Available: https://arxiv.org/abs/1901.03892  
 [4] C. E. Shannon and W. Weaver, “A Mathematical Theory of Communication,” Bell System Technical Journal, vol. 27, no. 4, pp. 623–656, Oct. 1949, doi: https://doi.org/10.1002/j.1538-7305.1948.tb00917.x.  
+[5] Fefferman, Charles, Sergey M. G. Narayanan, and Uri M. O. Lerman (2016). "Testing the Manifold Hypothesis." Journal of the American Mathematical Society 29(4): 983–1049. https://doi.org/10.1090/jams/852
 
 ### Contributions
 Jameel Maayah: Implemented training script, Grad-CAM visualizations, write-up, presentation
