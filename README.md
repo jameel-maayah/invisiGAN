@@ -73,9 +73,18 @@ Our methodology uses supervised learning methods because both the discriminator 
 ### Metrics
 We evaluate our system using 3 metrics: Fréchet Inception Distance (FID) to quantify the deviation of the generator's images from the original dataset; Bit Recovery Accuracy to measure the accuracy of the decoder per bit; and Full Recovery Rate to quantify the percentage of payloads decoded perfectly without error. Our goal is to maintain a low FID to ensure high perceptual quality, a high bit rate accurate (>99%), and maximize Exact Match Rate across all generated images. 
 
+Since the adversarial losses values are not directly interpretable, we do not report them numerically. It is more useful to rely on metrics such as FID, which directly quantify generator realism.
+
 ![Diagram](fid_fullrec_vs_bits.png)
 
-Since the adversarial losses values are not directly interpretable, we do not report them numerically. It is more useful to rely on metrics such as FID, which directly quantify generator realism.
+*Diagram of FID score (left axis) and full recovery rate (right axis) versus message length, conducted across both image datasets. Mode collapse was observed training the model on MNIST and 32-bit messages.*
+
+### Analysis
+We observe a clear negative correlation between the message length and message recoverability. Additionally, we observe a positive correlation between message length and FID score, indicating a negative correlation between message length and image fidelity.
+
+Most significantly, we observe significantly better encoding performance using the larger of the two datasets (EMNIST), which was able to reliable encode approximately twice as much information compared to MNIST. We provide a theoretical explanation below.
+
+![Diagram](imgspace.png)
 
 ### Visualizations/Interpretability
 We use the Grad-CAM method to visualize which image features contribute to a single bit of the decoded message:
