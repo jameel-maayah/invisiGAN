@@ -117,7 +117,7 @@ Grad-CAM computes the gradients of the decoder's output $D(G(z, M))$ with respec
 
 *Grad-CAM heatmap for all 16 bits. Notably, Bit 2 seems to correspond to the background hue of the generated image*
 
-Compared to typical steganographic algorithms which exploit pixel-wise differences and noise patterns, our generator seems to decode the message $M$ in higher level semantic features, such as stroke direction, width, and even the class of digit. This indicates that the generator exploits deeper, more complex features of the dataset in a way that makes the encoding more difficult to tamper with or even detect without altering the image significantly.
+Compared to typical steganographic algorithms which exploit pixel-wise differences and noise patterns, our generator seems to encode the message $M$ with higher level semantic features, such as stroke direction, width, and even the class of digit. This indicates that the generator exploits deeper, more complex features of the dataset in a way that makes the encoding more difficult to tamper with or even detect without altering the image significantly.
 
 All the relevant code for training and evaluation can be found in **train.ipynb**.
 
