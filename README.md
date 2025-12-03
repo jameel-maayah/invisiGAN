@@ -3,17 +3,18 @@
 ## Abstract
 We propose a methodology to embed binary sequences into the output of generative AI models, in particular Generative Adversarial Networks (GANs)[1], in ways imperceptible to the eye. Our technique conditions the generator network on a bit vector in addition to random noise, and the generator’s primary loss gradient will be supplied by the discriminator network. In addition, we incorporate a third “probe” network that attempts to decode the binary vector encoded by images created by the generator. This gives us a secondary training target, namely the accurate recovery of the original binary sequence. The job of the generator is to balance the “readability” of generated images whilst preserving its approximation of the original dataset.
 
-We would like to opt in for the Outstanding Project award.
+We would like to opt in for the Outstanding Project award. [Presentation slides](https://docs.google.com/presentation/d/1x3t7n1I7Aq0qR9unEPTPzDTHHX35oKuUBcWLqDfLLD4/edit?usp=sharing)
 
 ## 1. Literature
 
 Generative AI models are capable of reproducing artificial images that replicate existing databases[1]. Incremental developments of these models have allowed for the conditioning of the output of traditional generative networks by representing class labels or other features as additional input to the generator model[2]. We now look at a specific application of the GAN with its usage in hiding arbitrary binary data in images while keeping the changes hard to detect[3]. We will use various methods outlined by Claude Shannon in his “Mathematical Theory of Communication”[4] including rate-distortion theory and mutual information. 
 
-### Dataset Description
+### Dataset Descriptions
 The MNIST dataset is a small dataset which contains over 70,000 labeled greyscale images of hand-drawn digits 0 through 9. 
-### Dataset Link 
+The EMNIST dataset is a superset of MNIST, containing over 800,000 labeled greyscale images of hand-drawn digits, and lowercase and uppercase letters.
+### Dataset Links
 https://www.kaggle.com/datasets/hojjatk/mnist-dataset
-
+https://www.kaggle.com/datasets/crawford/emnist
 ## 2. Problem and Motivation
 
 ### Problem 
@@ -90,7 +91,7 @@ Compared to typical steganographic algorithms which exploit pixel-wise differenc
 All the relevant code for training and evaluation can be found in **train.ipynb**.
 
 ### Next Steps
-Having produced our first functional model, we will explore different architectures and hyperparameters in order to maximize decoder accuracy while maintaining a sufficiently low FID score; specifically, we plan to modify our generator architecture to more closely resemble a DCGAN, using transposed convolutional layers rather than upsampling layers. In addition, for all future model runs we plan to perform an ablation study by varying the length of embedded message length, using 0 as a control group, to analyze the trade off between payload size and robustness of image generation. We expect, essentially, to generate visually unaltered images with a highly accurate recovery of the embedded steganographic message. Finally, we plan to explore the effect of dataset choice by additionally using CIFAR-10, a dataset of similarly shaped but more diverse images. We hypothesize that the entropy of the image dataset has a direct impact on the amount of mutual information $I(G(z, M), M)$ that can be encoded in the image.
+Having produced our first functional model architecture, we will explore different architectures and hyperparameters in order to maximize decoder accuracy while maintaining a sufficiently low FID score; specifically, we plan to modify our generator architecture to more closely resemble a DCGAN, using transposed convolutional layers rather than upsampling layers, for increased visual fidelity. Additionally, knowing that our methodology works, we can expand it to more complex and fuller resolution image datasets. Finally, we plan to extend our technique to diffusion models as a proof of generality.
 
 ## 5. References
 
@@ -100,11 +101,11 @@ Having produced our first functional model, we will explore different architectu
 [4] C. E. Shannon and W. Weaver, “A Mathematical Theory of Communication,” Bell System Technical Journal, vol. 27, no. 4, pp. 623–656, Oct. 1949, doi: https://doi.org/10.1002/j.1538-7305.1948.tb00917.x.  
 
 ### Contributions
-Jameel Maayah: Implemented training script, Grad-CAM visualizations, write-up
+Jameel Maayah: Implemented training script, Grad-CAM visualizations, write-up, presentation
 
-Caleb Rieck: Implemented training script, FID metric
+Caleb Rieck: Implemented training script, FID metric, presentation
 
-Srikar Satluri: Research network architectures 
+Srikar Satluri: Research network architectures, presentation 
 
 Ajinkya Argonda: Researched network architectures, researched SteganoGAN 
 
