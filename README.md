@@ -5,7 +5,7 @@ We propose a methodology to embed binary sequences into the output of generative
 
 We would like to opt in for the Outstanding Project award. [Presentation slides](https://docs.google.com/presentation/d/1x3t7n1I7Aq0qR9unEPTPzDTHHX35oKuUBcWLqDfLLD4/edit?usp=sharing)
 
-Update: Won Outstanding Project award for CS 4641.
+Update: Won Outstanding Project award for CS 4641. [Link](https://mahdi-roozbahani.github.io/CS46417641-fall2025/docs/grading/project-breakdown/award_galore/)
 
 ## 1. Literature
 
