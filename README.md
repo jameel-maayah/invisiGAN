@@ -5,6 +5,8 @@ We propose a methodology to embed binary sequences into the output of generative
 
 We would like to opt in for the Outstanding Project award. [Presentation slides](https://docs.google.com/presentation/d/1x3t7n1I7Aq0qR9unEPTPzDTHHX35oKuUBcWLqDfLLD4/edit?usp=sharing)
 
+Update: Won Outstanding Project award for CS 4641.
+
 ## 1. Literature
 
 Generative AI models are capable of reproducing artificial images that replicate existing databases[1]. Incremental developments of these models have allowed for the conditioning of the output of traditional generative networks by representing class labels or other features as additional input to the generator model[2]. We now look at a specific application of the GAN with its usage in hiding arbitrary binary data in images while keeping the changes hard to detect[3]. We will use various methods outlined by Claude Shannon in his “Mathematical Theory of Communication”[4] including rate-distortion theory and mutual information. 
@@ -144,9 +146,6 @@ Srikar Satluri: Research network architectures, presentation
 Ajinkya Argonda: Researched network architectures, researched SteganoGAN 
 
 Anish Vallabhaneni: Loss metrics, researched GAN performance metrics 
-
-### GANTT Chart (Tentative)
-![Diagram](gantt_progress.jpg)
 ‌
 
 
