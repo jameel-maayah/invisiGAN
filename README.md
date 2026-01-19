@@ -84,7 +84,7 @@ Since the adversarial losses values are not directly interpretable, we do not re
 ### Analysis
 We observe a clear negative correlation between the message length and message recoverability. Additionally, we observe a positive correlation between message length and FID score, indicating a negative correlation between message length and image fidelity.
 
-Most significantly, we observe significantly better encoding performance using the larger of the two datasets (EMNIST), which was able to reliable encode approximately twice as much information compared to MNIST. We provide a theoretical explanation below.
+Most significantly, we observe significantly better encoding performance using the larger of the two datasets (EMNIST), which was able to reliably encode approximately twice as much information compared to MNIST. We provide a theoretical explanation below.
 
 ![Diagram](imgspace.png)
 
