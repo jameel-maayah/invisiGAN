@@ -79,7 +79,7 @@ Since the adversarial losses values are not directly interpretable, we do not re
 
 ![Diagram](fid_fullrec_vs_bits.png)
 
-*Diagram of FID score (left axis) and full recovery rate (right axis) versus message length, conducted across both image datasets. Mode collapse was observed training the model on MNIST and 32-bit messages.*
+*Diagram of FID score (left axis, solid) and full recovery rate (right axis, dotted) versus message length, conducted across both image datasets. Mode collapse was observed training the model on MNIST and 32-bit messages.*
 
 ### Analysis
 We observe a clear negative correlation between the message length and message recoverability. Additionally, we observe a positive correlation between message length and FID score, indicating a negative correlation between message length and image fidelity.
