@@ -9,7 +9,7 @@ Update: Won Outstanding Project award for CS 4641. [Link](https://mahdi-roozbaha
 
 ## 1. Literature
 
-Generative AI models are capable of reproducing artificial images that replicate existing databases[1]. Incremental developments of these models have allowed for the conditioning of the output of traditional generative networks by representing class labels or other features as additional input to the generator model[2]. We now look at a specific application of the GAN with its usage in hiding arbitrary binary data in images while keeping the changes hard to detect[3]. We will use various methods outlined by Claude Shannon in his “Mathematical Theory of Communication”[4] including rate-distortion theory and mutual information. 
+Generative AI models are capable of reproducing artificial images that replicate existing databases[1]. Incremental developments of these models have allowed for the conditioning of the output of traditional generative networks by representing class labels or other features as additional input to the generator model[2]. We now look at a specific application of the GAN with its usage in hiding arbitrary binary data in images while keeping the changes hard to detect[3]. We will use various methods outlined by Claude Shannon in his “Mathematical Theory of Communication”[4] including rate-distortion theory and mutual information. Namely, we empirically estimate a rate–distortion frontier for message embedding on learned *image manifolds*[5].
 
 ### Dataset Descriptions
 The MNIST dataset is a small dataset which contains over 70,000 labeled greyscale images of hand-drawn digits 0 through 9. 
